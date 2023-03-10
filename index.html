@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My Website</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+</head>
+<body>
+<main>
+  <div class="measure-inputs">
+    <input>
+    <input>
+    <input>
+    <input>
+    <input>
+    <input>
+    <input>
+    <input>
+  </div>
+  <div id="output"/>
+  <!--
+
+  This does full layout of a score:
+  https://www.alphatab.net/docs/introduction/
+
+  This lays out a staff
+  https://github.com/0xfe/vexflow
+
+  // import Vex from 'vexflow'
+  import { Vex } from "https://cdn.skypack.dev/vexflow@beta/build/esm/entry/vexflow.js";
+  -->
+</main>
+<script type="importmap">
+{
+  "imports": {
+    "vexflow": "https://cdn.skypack.dev/vexflow@beta/build/esm/entry/vexflow.js",
+    "chord-symbol": "https://cdn.skypack.dev/chord-symbol",
+    "chord-symbolX": "https://cdn.jsdelivr.net/npm/chord-symbol@4.0.0/lib/chord-symbol.js"
+  }
+}
+</script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vexflow/build/cjs/vexflow.js"></script>-->
+<script src="index.js" type="module"></script>
+</body>
+</html>
