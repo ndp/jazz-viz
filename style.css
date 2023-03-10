@@ -1,3 +1,13 @@
 input {
-  width: 2rem;
+  width: 107px;
+  font-size: 1.5rem;
+}
+
+.measure-inputs {
+  display: grid;
+  width: 1000px;
+  columns: 8;
+  grid-auto-flow: column;
+  justify-content: flex-end;
+}
 }
