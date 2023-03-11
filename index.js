@@ -1,14 +1,15 @@
 import { Accidental, Vex } from 'vexflow'
 import { chordParserFactory } from 'chord-symbol'
 
+const WIDTH = 1000
 const parseChord = chordParserFactory()
 
 console.log('VexFlow Build:', Vex.Flow.BUILD)
 
 const { Stave, StaveNote, Formatter, Renderer, BarNote } = Vex.Flow
 
-// Vex.Flow.setMusicFont('Bravura')
-Vex.Flow.setMusicFont('Petaluma')
+Vex.Flow.setMusicFont('Bravura')
+// Vex.Flow.setMusicFont('Petaluma')
 const div = document.getElementById('output')
 const renderer = new Renderer(div, Renderer.Backends.SVG)
 
@@ -65,13 +66,13 @@ function canonicalNote (note) {
 
 function renderChords (chords) {
 
-  renderer.resize(1000, 200)
+  renderer.resize(WIDTH, 200)
   const context = renderer.getContext()
   context.clear()
 
-  const stave = new Stave(10, 10, 1000)
-  stave.addClef('treble').addTimeSignature('4/4')
-
+  const stave = new Stave(10, 10, WIDTH)
+  stave.addClef('treble')
+  stave.addTimeSignature('4/4')
   stave.setContext(context).draw()
 
   let lastNotes = new Set()
@@ -97,13 +98,15 @@ function renderChords (chords) {
     notes.forEach((n, j) => {
       n = canonicalNote(n)
       if (!allNotes.has(n) && i !== 0)
-        staveNote.setKeyStyle(j, { fillStyle: 'red', strokeStyle: 'red' })
+        staveNote.setKeyStyle(j, { fillStyle: 'green', strokeStyle: 'green' })
       if (lastNotes.has(n))
         staveNote.setKeyStyle(j, { fillStyle: 'grey', strokeStyle: 'grey' })
       allNotes.add(n)
     })
 
     lastNotes = new Set(notes)
+    if (i === chords.length -1)
+      return [staveNote]
     return [staveNote, new BarNote()]
   })
 
