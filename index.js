@@ -10,15 +10,18 @@ const { Stave, StaveNote, Formatter, Renderer, BarNote } = Vex.Flow
 
 Vex.Flow.setMusicFont('Bravura')
 // Vex.Flow.setMusicFont('Petaluma')
-const div = document.getElementById('output')
-const renderer = new Renderer(div, Renderer.Backends.SVG)
 
 watchInputs()
 refresh()
 
 function refresh () {
   const chords = readInputsAsChords()
-  renderChords(chords)
+  const state = {
+    lastNotes: new Set(),
+    allNotes:  new Set(),
+  }
+  renderChords(chords.slice(0, 8), 'output', state)
+  renderChords(chords.slice(8), 'output2', state)
 }
 
 function readInputsAsChords () {
@@ -64,7 +67,10 @@ function canonicalNote (note) {
   }
 }
 
-function renderChords (chords) {
+function renderChords (chords, domId, state) {
+
+  document.getElementById(domId).replaceChildren()
+  const renderer = new Renderer(document.getElementById(domId), Renderer.Backends.SVG)
 
   renderer.resize(WIDTH, 200)
   const context = renderer.getContext()
@@ -72,11 +78,10 @@ function renderChords (chords) {
 
   const stave = new Stave(10, 10, WIDTH)
   stave.addClef('treble')
+  if (state.allNotes.size === 0)
   stave.addTimeSignature('4/4')
   stave.setContext(context).draw()
 
-  let lastNotes = new Set()
-  let allNotes = new Set()
   const notes = chords.flatMap((ch, i) => {
     const chord = parseChord(ch)
     const notes = chord.normalized?.notes || []
@@ -97,15 +102,15 @@ function renderChords (chords) {
     // Colorize notes, based on usage
     notes.forEach((n, j) => {
       n = canonicalNote(n)
-      if (!allNotes.has(n) && i !== 0)
+      if (!state.allNotes.has(n) && i !== 0)
         staveNote.setKeyStyle(j, { fillStyle: 'green', strokeStyle: 'green' })
-      if (lastNotes.has(n))
+      if (state.lastNotes.has(n))
         staveNote.setKeyStyle(j, { fillStyle: 'grey', strokeStyle: 'grey' })
-      allNotes.add(n)
+      state.allNotes.add(n)
     })
 
-    lastNotes = new Set(notes)
-    if (i === chords.length -1)
+    state.lastNotes = new Set(notes)
+    if (i === chords.length - 1)
       return [staveNote]
     return [staveNote, new BarNote()]
   })
