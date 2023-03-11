@@ -11,7 +11,7 @@ const parseChord = chordParserFactory()
 
 console.log('VexFlow Build:', Vex.Flow.BUILD)
 
-const { Factory, Stave, StaveNote, Formatter, Renderer } = Vex.Flow
+const { Stave, StaveNote, Formatter, Renderer, BarNote } = Vex.Flow
 
 Vex.Flow.setMusicFont('Bravura')
 // Vex.Flow.setMusicFont('Petaluma');
@@ -45,6 +45,27 @@ function watchInputs () {
   }
 }
 
+function notesToKeys (notes) {
+  let octave = 4
+  const keys = notes.map((n, j) => {
+    if (['C', 'C#', 'Db', 'D', 'D#'].includes(n) && j > 0) octave = 5
+    return `${n.toLowerCase()}/${octave}`
+  })
+  return keys
+}
+
+function canonicalNote (note) {
+  switch(note) {
+    case 'A#': return 'Bb'
+    case 'C#': return 'Db'
+    case 'D#': return 'Eb'
+    case 'F#': return 'Gb'
+    case 'G#': return 'Ab'
+    default:
+      return note
+  }
+}
+
 function renderChords (chords) {
 
 // Configure the rendering context.
@@ -59,18 +80,28 @@ function renderChords (chords) {
 
   let lastNotes = new Set()
   let allNotes = new Set()
-  const notes = chords.map((ch, i) => {
+  const notes = chords.flatMap((ch, i) => {
     const chord = parseChord(ch)
-    const notes = chord.normalized.notes
-    console.log(chord.normalized)
-    let octave = 4
-    const keys = notes.map((n, j) => {
-      if (['C', 'C#', 'Db', 'D', 'D#'].includes(n) && j > 0) octave = 5
-      return `${n.toLowerCase()}/${octave}`
+    // if(!chord.normalized) return [[new StaveNote({ keys: ['C/4'], duration: 'w' }), new BarNote()]]
+    const notes = chord.normalized?.notes || []
+    const keys = notesToKeys(notes)
+
+    let staveNote = keys.length === 0 ?
+                    new StaveNote({ keys: ['b/4'], stem_direction: 1, duration: 'wr' })
+                    :
+                    new StaveNote({ keys: keys, duration: 'w' })
+
+    // Add accidentals
+    notes.forEach((n, j) => {
+      const acc =keys[j].split('/')[0][1]
+      if (!acc) return
+      const accidental = new Accidental(acc)
+      staveNote.addModifier(accidental, j)
     })
-    let staveNote = new StaveNote({ keys: keys, duration: 'w' })
+
 
     notes.forEach((n, j) => {
+      n = canonicalNote(n)
       if (!allNotes.has(n) && i !== 0)
         staveNote.setKeyStyle(j, { fillStyle: 'red', strokeStyle: 'red' })
       if (lastNotes.has(n))
@@ -79,12 +110,15 @@ function renderChords (chords) {
     })
 
     lastNotes = new Set(notes)
-    return staveNote
+    return [staveNote, new BarNote()]
 
   })
 
-  const voice = new Voice().setMode(Voice.Mode.SOFT).addTickables(notes)
-  Accidental.applyAccidentals([voice], 'C')
+  // const voice = new Voice().setMode(Voice.Mode.SOFT).addTickables(notes)
+  // Accidental.applyAccidentals([voice], 'C')
+
+  // const voice = new Voice().setMode(Voice.Mode.HARD).addTickables(notes)
+  // Accidental.applyAccidentals([voice], 'C')
 
   Formatter.FormatAndDraw(context, stave, notes)
 
