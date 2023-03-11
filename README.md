@@ -14,11 +14,20 @@ notes in gray:
 
 <img src='./autumn-leaves-1-8.png' />
 
-I see this as a tool for analysis, not any sort of real-time usage. 
+I see this as a tool for analysis, not any sort of real-time usage.
+
+For me, this is more interesting on a song that confounds me a bit, like Dolphin Dance. I still haven't quite figured out how to bring coherence to the chords:
+
+<img src='./dolphin-dance-1-16.png' />
+
+
+## Future
 
 Right now, you enter chords yourself. I went this route 
 hunting around for existing libraries and not finding anything 
-that would work well.
+that would work well. I can imagine a way to paste in a whole tune.
+
+I wonder if doing a gradient of how popular a note is might be interesting.
 
 
 

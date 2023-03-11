@@ -43,9 +43,11 @@ function watchInputs () {
 }
 
 function notesToKeys (notes) {
-  let octave = 4
+  let octave = ['Bb','B'].includes(notes[0]) ? 3 : 4
+  console.log(notes)
   return notes.map((n, j) => {
-    if (['C', 'C#', 'Db', 'D', 'D#'].includes(n) && j > 0) octave = 5
+    if (['C', 'C#', 'Db', 'D', 'D#', 'Eb'].includes(n) && j > 0
+       && ['G','G#','Ab','A','A#','Bb','B'].includes(notes[j-1])) octave += 1
     return `${n.toLowerCase()}/${octave}`
   })
 }
